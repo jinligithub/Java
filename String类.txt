@@ -1,0 +1,55 @@
+1.String类
+1.1String的两种实例化方式
+a.直接赋值用的最多（）
+String str=“hello”
+b。通过构造方法实例化
+String str=new String（“hello”）；
+
+1.2,字符串比较
+String直接比较字符串的内容比较的是地址  
+
+public boolean equals（Object anObject）
+str.equals（str1）;
+
+1.3字符串长 量是String类的匿名对象
+小tips：在进行指定内容比较时，将指定内容（字符串常量）写前边，避免空指针NULLPointException
+在JVM底层自动维护一个字符串对象池
+如果采用直接赋值的模式string类的实例化操作，对此对象讲自动保存到对象池中，如果继续采用直接赋值模式声明String对象，先去对象池找指定内容，如果有直接引用。若果没有开辟新的空间先将他保存到内存池供下次使用
+
+比较入池没有：直接比较
+
+String str=“hello”；
+String str=new String（“hello”）；
+System.out.println(str==str1);
+
+字符串手工入池
+public native String.intern();
+
+1.5字符串常量不可变更
+字符串一旦定义不可以改变
+
+**1.5.1字符与字符串**
+String<->char
+1.字符数组char[]->String
+
+
+public String(char[]  value1)
+public String(char[]  value1,int offset, int count)
+
+2.将字符串按照索引转为单个字符（索引从0开始）
+String ->char
+public char charAt(int index)
+
+3.将字符串转为字符数组
+String->char[]
+
+public char[] toCharArray();
+
+2
+
+
+
+
+
+
+
