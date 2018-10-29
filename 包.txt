@@ -1,0 +1,37 @@
+1.包的定义与使用
+包就是文件夹
+在源文件首行：package 包名称
+
+打包编译命令
+javac -d  . Test.java   
+-d：根据包定义的包名称创建生成目录
+.：在当前目录下生成
+javac -d  ：编译命令
+执行需要使用全包名称：包名.类名
+java www.bit.java.Test
+
+自动打包编译命令（将当前目录下所有源文件按照主类的使用情况自动编译）
+javac -d 空格 .空格./*.java
+
+
+Alt+1：出现界面
+
+
+访问权限控制
+private  <default (包访问权限)<protected(继承访问权限)<public 
+2.1包访问权限
+定义：本包下的所有源文件可以相互调用属性与方法
+
+JDK中常用的包，
+Java.lang :系统常用的基础类（Object，String,包装类），此包在JDK1.1之后自动导入
+
+Java.util(需要导入)：Java提供的工具程序包（****），类集（ArrayList，HashMap）
+
+J.u.c :并发程序包java .util.concurrent
+
+2.2继承访问权限  protected
+
+起到封装的作用：private,protected,  default
+
+
+
