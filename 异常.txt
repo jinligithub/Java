@@ -1,0 +1,38 @@
+5.异常体系
+Error：猫叔Java运行时内部错误与资源耗尽错误，这种内部错误一旦出现，除了告知用户并使程序安全终止之外，在无能为力
+
+Exception（程序出错）：
+IOException：程序本身没有问题，由于IO处理程序导致出错
+RuntimeException：由于程序错误导致的
+
+非手查异常：由于继承与Error或RuntimeException的异常类称为非受查异常
+受查异常（必须强制处理）：所有继承Exception与IOException的称为受查异常
+
+5.1异常处理格式
+
+try{
+       可能出现异常的语句
+}[catch  ( 异常类 对象  ) ]  {
+    出现异常的操作
+}[finaly ]{
+    异常的出口（无论是否产生异常，都会走finaly,并且是最后走）
+}
+
+try....catch...
+try....finaly....
+try.....catch....finaly....
+
+无论是否产生异常，无论try ，catch是否有返回语句，最终都会执行finaly块
+
+e.printStackTrace();
+
+一个catch可能解决不了所有的问题，所以用catch(Exception e){e.PrintStackTrace}
+
+5.2throws关键字---作用于方法上
+在进行方法定义时，如果要明确告诉调用者本方法可能会产生那些异常，可以用throws方法进行声明，表示将异常抛回给回调方，并且当方法出现问题后可以不处理异常
+
+5.3throw关键字--作用在方法中
+throw语句直接写在方法中，表示人为进行异常跑出
+如果现在异常类对象实例化不希望由JVM产生而由用户产 生，就可以使用throw来完成
+6.断言assert
+
