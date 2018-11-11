@@ -1,126 +1,127 @@
-1.���̺��̵߳ĸ���
-����:OS��һ�������ִ������
+1.进程和线程的概念
+进程:OS中一个程序的执行周期
 
-�̣߳������е�һ������һ�����̰���N���̣߳�����������߿���Ӱ�����������֡�����Ӱ�������������̣߳�
+线程：进程中的一个任务，一个进程包含N个线程（打开浏览器，边看电影，边下载音乐。看电影，下载音乐两线程）
 
-���̺��̵߳�����
-1.ÿ������ӵ���Լ���һ���ױ������ǲ���ϵͳ����Դ�������һС��λ���߳������ڽ��̴��ڣ�����̹߳��������Դ��OS������ĵ��ȵĻ�����λ��
-2.�������һ�����̵Ŀ���Ҫ���������һ���̴߳�ģ����߳���������
-3.û�н��̾�û���̣߳�һ��������ֹ�����ڵ��߳�ȫ������
+进程和线程的区别：
+1.每个进程拥有自己的一整套变量，是操作系统中资源分配的这一小单位。线程依托于进程存在，多个线程共享进程资源，OS中任务的调度的基本单位。
+2.启动，撤销一个进程的开销要比启动，撤销一个线程大的（多线程轻量级）
+3.没有进程就没有线程，一旦进程终止，其内的线程全部撤销
 
-�߲�����ͬһʱ���̵߳ķ������ǳ��ǳ��ǳ���
+高并发：同一时刻线程的访问量非常非常非常高
 
-DDos���ڿͼ�������ʬ�豸 ����ȡ�����Ǻ�ͬʱ����ͬһ�������������·�����̱����
-�ֲ�ʽ���ö��������
+DDos：黑客技术。僵尸设备 ，获取到他们后，同时攻击同一个服务器，导致服务器瘫痪。
 
-2.java���߳�
-2.1�̳�Thread��ʵ�ֶ��߳�
-Java.lang.Thread���̲߳����ĺ����࣬JDK1.0�ṩ
-�½�һ�����߳���򵥵ķ�������ֱ�Ӽ̳�Thread��Ȼ��д���е�run()�������൱����������
-ֱ�ӵ���run()�������൱�ڵ�����ͨ������
-�������ַ�ʽʵ�ֶ��̣߳��߳���һ����Thread���ṩ��start()������
-�������С�
+分布式：好多个服务器
 
-start()������
-1.���ȼ���س�״̬�Ƿ�Ϊ0,���߳�Ĭ��״̬Ϊ0����δΪ���������߳��Ѿ�����ٴε���Start()�������ܳ����ܲ��쳣IllegalThreadStateException��һ���̵߳�start()ֻ�ܵ���һ��
+2.java多线程
+2.1继承Thread类实现多线程
+Java.lang.Thread是线程操作的核心类，JDK1.0提供
+新建一个人线程最简单的方法就是直接继承Thread类然后覆写其中的run()方法（相当于主方法）
+直接调用run()方法，相当于调用普通方法。
+无论哪种方式实现多线程，线程启动一律启动Thread类提供的start()方法。
+交替运行。
 
-2.ͨ��Start0()�������߳�
+start()解析：
+1.首先检查县城状态是否为0,（线程默认状态为0，表未为启动），如果线程已经启动，再次调用Start()方法会跑出非受查异常IllegalThreadStateException。一个线程的start()只能调用一次
 
-3.JVM����Start0()����������Դ���� ��ϵͳ���ȣ�׼������Դ���̺߳�ص�run����������ִ���̵߳ľ�������
+2.通过Start0()方法启动线程
 
-2.2Runnable�ӿ�ʵ�ֶ��߳�
-@FunctionalInterface ����ʽ��̷�����:���ӿ� ���Ƿ�ֻ��һ�����󷽷���
+3.JVM调用Start0()方法进行资源分配 与系统调度，准备好资源启动线程后回调run（）方法来执行线程的具体任务。
 
-����ģʽ��
+2.2Runnable接口实现多线程
+@FunctionalInterface 函数式编程方法，:检查接口 中是否只有一个抽象方法。
+
+代理模式：
 public class Thread Implements Runnable
 class MyThread 
 
-a.java �ж��̵߳Ĵ������һ�����͵Ĵ���ģʽ������Thread����� ��Դ���ȣ�ϵͳ���丨���߳���ҵ���Զ�����߳��ฺ����ʵҵ��ʵ�֡�
-b.ʹ��Runnable �ӿ�ʵ�ֶ��̳߳�������Ը��õ�������Դ����
+a.java 中多线程的处理就是一个典型的代理模式，其中Thread类完成 资源调度，系统分配辅助线程类业务，自定义的线程类负责真实业务实现。
+b.使用Runnable 接口实现多线程程序类可以更好的描述资源共享。
 
 
 
-2.3Callable<V>�ӿ�ʵ�ֶ��߳�---Ψһһ���з���ֵ���߳�ʵ�ַ�ʽ
+2.3Callable<V>接口实现多线程---唯一一个有返回值的线程实现方式
 
-juc���߲��������
+juc：高并发程序包
 Java.util.concurrent.Callable<V>:
-V call() throws Exception : �߳�ִ�к��з���ֵ
+V call() throws Exception : 线程执行后有返回值
 
 Java.util.Future<V>:
-V get() throws InterruptedException,ExecutionException��ȡ��Callable�ӿڵ�call��������ֵ��
+V get() throws InterruptedException,ExecutionException：取得Callable接口的call方法返回值。
 
-���߳���Ҫ����ֵʱֻ�ܲ���Callable�ӿ�ʵ�ֶ��߳�
+当线程需要返回值时只能采用Callable接口实现多线程
 
-3.���̵߳ĳ��ò�������
-3.1�̵߳�������ȡ�ã���ʶ�Ǹ��߳������У�
-a.ͨ�����췽�����߳����� 
-public Thread��String name��
-public Thread��Runnable target  String name��
+3.多线程的常用操作方法
+3.1线程的命名与取得（标识那个线程在运行）
+a.通过构造方法将线程命名 
+public Thread（String name）
+public Thread（Runnable target  String name）
 
-b.�����߳�����
+b.设置线程名称
 public final  sychronized void setName(String name)
 
-c.ȡ���߳�����
+c.取得线程名称
 public final String getName()
 
-d.*****ȡ�õ�ǰ����ִ�е��̶߳���*****
-public static native Thread  currentThread����
+d.*****取得当前正在执行的线程对象*****
+public static native Thread  currentThread（）
 
-Java�е�main����Ϊ���̣߳�mian��
+Java中的main方法为主线程（mian）
 
 
-3.2�߳�����(sleep )--��λ������  1000����=1��
-�߳����ߣ�ֵ�������߳��ݻ�ִ�У��ȵ���Ԥ��ʱ���ڻظ�ִ��
-�߳����߻���������CPU����CPUȥִ�����������߳����߲����ͷŶ�����
+3.2线程休眠(sleep )--单位：毫秒  1000毫秒=1秒
+线程休眠：值得是让线程暂缓执行，等到了预计时间在回复执行
+线程休眠会立即交出CPU，让CPU去执行其他任务。线程休眠不会释放对象锁
 public  static  native  void 
 InterruptException
 
-3.3�߳��ò���yield��
-��ͣ����ִ�е��̶߳��󣬲�ִ����������
-yield�������õ�ǰ���򽻳�CPU������һ����������CPU��yield��������CPU��ֻ����ӵ����ͬ���ȼ����̻߳�ȡCPU�Ļ��ᡣ����Yield���������ͷŶ�������
+3.3线程让步（yield）
+暂停正在执行的线程对象，并执行其他程序
+yield（）会让当前程序交出CPU，但不一定立即交出CPU，yield（）交出CPU后只能让拥有相同优先级的线程获取CPU的机会。并且Yield（）不会释放对象锁。
 public  static native void  yield()
 
-3.4join����
-�ȴ����߳���ֹ����������߳��е��ø÷����������߳����ߣ��õ��ø÷������߳���ִ����Ϻ��ٻָ�ִ�����߳�.
+3.4join方法
+等待该线程终止。如果在主线程中调用该方法会让主线程休眠，让调用该方法的线程先执行完毕后再恢复执行主线程.
 
 
 public final void join()  throws InterruptedException
 
 
-join() ֻ�Ƕ�Object���wait() ����һ���װ����
+join() 只是对Object类的wait() 做了一层包装而已
 
-3.5�߳�ֹͣ
+3.5线程停止
 
-3.5.1�ֹ����ñ��λ�����߳������������˳����Ƽ�ʹ�ã�
+3.5.1手工设置标记位，让线程满足条件后退出（推荐使用）
 
-3.5.2ʹ��stop ����ǿ�����߳��˳������Ǹ÷�������ȫ�Ѿ���@Deprecated������������
+3.5.2使用stop 方法强制让线程退出，但是该方法不安全已经被@Deprecated（过期声明）
 
-3.5.3ʹ��Thread���ṩ��interrupt()�е��̣߳�����ϵͳ������һ�����λ��ֱ��ʹ�ü��ɣ�
-interrupt����ֻ�ǽ��̵߳�״̬��Ϊ�ն�״̬���ѣ��������ж�һ���������е��߳�
+3.5.3使用Thread类提供的interrupt()中的线程（就是系统设置了一个标记位，直接使用即可）
+interrupt方法只是将线程的状态改为终端状态而已，他不会中断一个正在运行的线程
 
-boolean bool=Thread.currentThread().isInterrupted();  Ĭ��Ϊfalse������֮��Ϊtrue
+boolean bool=Thread.currentThread().isInterrupted();  默认为false，调用之后为true
 
-����̵߳�����wait(),sleep(),join()��������̬�����ø��̵߳�interrupt�������׳�InterruptedException,�����̵߳�interrupt����Ϊfalse��
+如果线程调用了wait(),sleep(),join()进入阻塞态，调用该线程的interrupt（）会抛出InterruptedException,并将线程的interrupt重置为false。
   
 
-3.6�̵߳����ȼ�����1,10����
-�̵߳����ȼ���ָ�����ȼ�Խ��Խ�п�����ִ�ж��ѣ��������п��ܶ��ѡ�
+3.6线程的优先级（【1,10】）
+线程的优先级是指，优先级越高越有可能先执行而已，仅仅是有可能而已。
 
-�������ȼ���
-public final void setPriority��int newPriority��
+设置优先级：
+public final void setPriority（int newPriority）
 
-ȡ�����ȼ���
-public final int getPriority����
+取得优先级：
+public final int getPriority（）
 
 
 Thread.MAX.PRIORITY=10
 Thread.NORM_PRIORITY=5
 Thread.MIN_PRIORITY=1
 
-���̵߳����ȼ���5
+主线程的优先级：5
 
-�̵߳ļ̳��ԣ����ȼ��ǿ��Լ̳е�
-��A�߳�����B�̣߳���A��B�����ȼ�һ����
+线程的继承性：优先级是可以继承的
+在A线程中启动B线程，则A和B的优先级一样。
 
 
 
