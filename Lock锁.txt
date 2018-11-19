@@ -1,0 +1,62 @@
+1.Lock体系
+JDK1.5之后增加java.util.concurrent.locks提供了与内建锁完全不同的实现多线程共享资源访问机制。
+xc 线程共享资源访问机制，失去了内建锁隐式的加锁解锁过程，增加了可中断的获取锁以及超时获取锁以及共享锁等内建锁不具备的特性。
+
+lock锁的标准使用形式
+lock lock =new ReentrantLock();
+try{
+     lock.lock();
+    //同步块
+     }finally{
+    lock.unlock();
+}
+
+1.1lock接口API
+1a.void lock();//获取锁
+b.void lockInterruptibly()
+    throws InterruptedException;//获取锁的过程能够响应中断（lock独有）
+c.boolean tryLock();//获取成功返回true，失败返回false ，可以响应中断。
+d.boolean  tryLock(long time , TimeUnit unit):在c的基础上增加了超时等待机制。规定的时间内如果没有获取到锁，线程直接返回（lock独有）
+e.void unlock();//解锁
+
+1.2AbstractQueuedSynchronizer(AQS,同步器)，lock体系最核心的存在
+
+t同步器是用来构建锁与其他同步组件的基本框架，它的实现主要依赖于一个int 成员变量来表示同步状态以及通过一个FIFO队列构成同步队列。
+
+要使用AQS，推荐使用静态内部类继承AQS，覆写AQS的protected用来改变同步状态的方法，其他方法主要是实现排队与阻塞机制。状态更新 使用getState(),setState(),compareAndSetAtate().
+
+lock 面向使用者，定义使用者与锁交互的接口，隐藏了实现细节。AQS面向锁的实现者，简化了锁的实现方式屏蔽了同步状态的管理，线程排队，线程等待，与唤醒等底层操作。
+
+1.3AQS提供的模板方法
+
+独占锁
+1.void acquire（int arg）：独占式获取同步状态，如果获取失败则将当前线程插入同步队列进行等待。
+2.void acquireInterruptibly（int arg ,）: 在1的基础上增加了响应中断。
+3.Boolean tryAcquireNanos（int arg， long naonsTimeOut）：在2的基础上增加了超时等待，在规定的时间内未获取到同步状态返回false
+4.Boolean tryAcquire（int arg）：获取状态成功返回ture,失败返回false
+5.Boolean release（int arg）：释放同步状态，该方法会唤醒同步队列中的下一个节点。 
+
+共享锁
+
+AQS中的同步队列是带题为节点的双向链表，节点的组成为：
+Node prev；
+Node next；
+Thread Thread；
+将线程封装为Node 节点后进行入队与出队处理。
+它带头结点 ，方便队第一个节点插入和删除；
+
+Node
+
+
+
+
+
+
+
+
+
+
+
+
+
+
