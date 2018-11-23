@@ -44,19 +44,33 @@ Node next；
 Thread Thread；
 将线程封装为Node 节点后进行入队与出队处理。
 它带头结点 ，方便队第一个节点插入和删除；
-
-Node
-
-
-
+节点的状态：
+SIGNAL：-1
+Iinit：=0；
 
 
+1.4深入理解AQS
+1.4.1独占锁
+独占锁的获取--acquire（int arg）
 
+1.4.1.1tryAcquire再次使用CAS尝试获取同步状态，若成功方法直接返回，当前线程置位持有线程。
+若再次失败，调用addWaiter（）
 
+2.addWaiter()源码
 
+3.end（）
 
+4.acquire
+节点从同步队列获取同步状态的前提条件：
+只有当前驱节点为头结点时，线程才有机会获取同步状态。
+if(p==head&& tryAcquire(arg))
 
+当前线程获取同步状态失败时，首先调用shouldParkAfterFailedAcquire(Node  prev,Node node )
 
+shouldParkAfterFailedAcquire(Node  prev,Node node )尝试将前期节点的状态改为Node.SIGNAL（-1），表示此时当前节点应该被阻塞。
 
+竞争锁失败的线程都放在了同步队列里。
+等待队列等待被唤醒，从等待队列移回同步队列。
 
-
+独占式锁的释放：release（）
+unparkSuccessor():唤醒离头结点最近的一个非空节点。尽最大可能保持公平性。 
