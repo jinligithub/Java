@@ -1,0 +1,139 @@
+线程池（worker）
+1.线程池的优点
+降低资源消耗：通过重复利用已创建的线程降低线程创建的与销毁带来的损耗
+
+提高响应速度：当任务到达时，无需等待线程创建就可以立即执行
+
+提高线程的可管理性：使用线程池可以统一进行线程分配，调度与监控。
+
+2.线程池继承关系
+
+ExecutorService（普通调度池和讯接口）
+submit（Callable|Runnable）: Future<T>
+
+ScheduleEXecutorService（定时调度池核心接口）
+Schedule（Runnable| Callable  command，
+                                          long  delay，TimeUnit  unit ）：延迟delay个时间后开始执行
+scheduleAtFixedRate（Runnable  command ，long  initiaDelay  ，long  Period，TimeUnit unit）
+延迟delay个时间单位后开始执行，并且每隔period时间单位就执行一次
+
+
+ThraedPoolExectuor(普通调度池核心类)
+scheduleThreadPoolExecutor（定时调度池核心类）
+
+3.线程池的执行流程
+第一步：判断 核心线程池是否已满，如果未满，创建一个新的线程来执行未执行的任务。如果已满，判断是否有空闲线程，有的话将任务分给空闲线程，否则执行步骤2.（创建线程需要获得全局锁）
+第二步：判断工作队列（阻塞队列XlockingQueue）是否已满，如果未满，将任务存储在工作队列中等待空闲队列调度，如果工作队列已满，执行步骤三。
+第三步：判断当前线程池是否已达到最大值，如果没有达到最大值，则创建新的线程来执行任务（创建线程需要获得全局锁），否则，执行4
+第四步：调用饱和策略来处理此任务。
+
+
+4.线程池的使用
+4.1手工创建线程池******************
+通过new一个ThreadPoolExecutor就可以实现一个自定义线程池
+ThreadPoolExecutor（int ）
+
+
+public ThreadPoolExecutor  (int corePoolSize,
+                         int maximumPoolSize,
+                          long keepAliveTime,
+                          TimeUnit unit,
+                          BlockingQueue<Runnable> workQueue,
+                          RejectedExecutionHandler handler)
+
+
+如果采用无界队列下边的属性就没意义了：
+ int maximumPoolSize,
+ long keepAliveTime,
+ RejectedExecutionHandler handler)
+1.coolPoolSize（核心线程池的大小）：
+当提交一个任务到线程池时，只要核心线程池未达到corePoolSize。创建新线程来执行任务，调用ppreStartAllCoreThreads（），线程池会提前创建并启动所有核心线程
+
+2.BlockingQueue<Runnable>workQueue(任务队列)：保存等待执行任务的证书队列
+
+-ArrayBlockingQueue：基于数组有界阻塞队列，按照FIFO原则对元素进行排列。
+
+-LinkedBlockingQueue：基于链表的无界阻塞队列，按照FIFO排列元素，吞吐量要高于ArrayBlockingQueue。内置线程池newFixedThreadPool -固定大小线程池就采用此队列。
+
+-SynchronousQueue：一个不存储元素的阻塞队列（无界队列）。每个插入操作需要等待另一个线程的移除操作，否则插入操作一直处于阻塞状态，吞吐量通常高于LinkedBlockingQueue。内置线程池newCachedThreadPool - 缓存线程池就采用此队列。
+
+-priorityBlockingQueue ：具有优先级的证书队列
+
+3.maximumPoolSize：下次吃的最大数量
+
+4.keepAliveTime：（线程池保持活动时间）
+线程池的工作线程空闲后，保持存活时间
+任务比较多，并且每个任务执行时间比较短，可以掉此参数来提高线程的利用率
+
+
+
+5.RejectedExecutionHandler（饱和策略）
+-AbortPolicy：无法处理新任务抛出异常（JDK默认采用此策略）
+-CallerRunsPolicy：使用调用者艘在的线程来处理任务。
+DiscardOldestPolicy：丢弃队列里最近的一个任务，并执行当前任务。
+DiscardPolicy：不处理，丢弃任务，也不报异常。
+
+调用future接口的get方法会阻塞其他线程，直到取得当前线程执行完毕后的返回值。
+
+FutureTask中的任务只会执行一次。
+
+线程池指向完毕后需要关闭：shutdown（）；   因为线程不会自己关闭线程池。
+
+5.内置四大线程池
+
+5.1固定大小线程池FixedThreadPool
+
+public static ExecutorService newFixedThreadPool(int nThreads) {
+    return new ThreadPoolExecutor(nThreads, nThreads,
+                                  0L, TimeUnit.MILLISECONDS,
+                                  new LinkedBlockingQueue<Runnable>());
+}
+固定大小 的线程池适用于为了满足需求管理需求，而需要限制当前线程数目的应用。适用于负载较重的服务器
+
+5.2
+
+public static ExecutorService newSingleThreadExecutor() {
+    return new FinalizableDelegatedExecutorService
+        (new ThreadPoolExecutor(1, 1,
+                               0L, TimeUnit.MILLISECONDS,
+                               new LinkedBlockingQueue<Runnable>()));
+}
+使用于并且在需要保证顺序执行的各个任务，并且在任意时间，不会有
+
+
+
+
+
+
+
+
+根据需要创建新线程
+
+public static ExecutorService newCachedThreadPool() {
+    return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+                                  60L, TimeUnit.SECONDS,
+                                  new SynchronousQueue<Runnable>());
+}
+
+当提交任务速度快于执行任务的速度，缓存线程池会不断穿件新的线程。
+大小无界线程池，适用于执行很多的短期异步小程序，或者负载较轻的服务器
+
+
+5.4定时调度器scheduleThreadPool（int NThread）
+需要定时执行任务场景。
+
+
+JDK1.7
+Fork-join  拆分任务思想
+线程池--worker  工作线程 
+
+
+
+
+
+
+
+
+
+
+
