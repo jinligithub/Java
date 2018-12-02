@@ -1,0 +1,223 @@
+反射反射：指的是对象的反向处理，根据对象倒推类的组成。
+反射类核心class类（专门描述其他类的组成）Object类中取得对象的Class对象public final native  Class<?> getClass();
+Class类描述接口与类的组成，Class对象由JVM第一次加载类时产生，并且全局唯一。取得人以类Class对象方法：
+	* 调用对象.getClass()对象取得Class对象
+	* 类名称.class取得Class对象
+	* Class.forName(类的全名)取得Class对象
+
+基本类型有Class类，但不是Class对象。public T newInstance（）：通过反射实例化类对象。通过反射可以破坏封装。先取的Class对象，通过反射产生类的对象，
+
+
+
+12.1
+
+1.反射与工厂方法模式
+
+2.反射与类操作
+
+2.1.取得父类&父接口信息
+
+取得包信息--Package(描述包信息的类)
+public  package getPackage();
+
+取得父类的Class对象
+getSuperClass：Class<? super T>   T是？的下限
+
+
+
+取得实现的父类接口Class对象
+getInterfaces（）：Class<?>[]
+
+
+2.2反射与构造方法--constructor（描述类构造方法信息）
+2.2.1取得本类中指定参数类中的构造方法
+public Constructor<T> getConstructor (Class <?>... parameterTypes)
+
+
+public  Consturctor<T>getDeclaredConstructors（Class<?>... parameter）
+
+
+2.2.2取得本类中的构造方法
+public  Constructor <?>[] getConstructors() throws  SeurityException
+只能取得权限为public的构造方法
+public  Constructor<?>[] getDeclaredConstructors（）throws   SecurityExecption:
+取得类中所有权限的构造方法
+Class 类的newInstance（）实际上是类中的无参构造，如果类中没有无参构造或者权限不为public，此方法无法使用！！！
+
+关注Constructor类的方法如下：
+public T newInstance（Object  ... initargs）
+若类中没有无参构造。则只能用Constructor提供的newInstance方法使用有参构造来实例化对象。
+
+
+2.3反射调用普通方法（核心--Method）*****************
+2.3.1取得类中指定名称与参数的普通方法
+public Method getMethod（String name, Class<?> ... parameterTypes）
+
+public Method  getDeclareMethod(String name, Class<?> ... parameterTypes)
+
+2.3.2取得类中所有普通方法
+
+public Method getMethod（) throws  SecurityException
+取得本类及其父类中所有权限为public的普通方法（包含静态方法）
+
+public Method getDeclareMethods()  throws  SecurityException
+只能取得本类中所有方法（包含private方法）
+
+2.3.3调用普通方法
+/**
+*反射调用普通方法
+*obj    类的实例化对象
+*args   普通方法参数
+*/
+public Object invoke （Object obj ，Object  ... args）
+Object  ... args：调用普通方法的参数
+
+2.4反射与普通属性（Field）
+
+2.4.1取得类中指定名称属性
+public Field  getField（String  name）
+
+public Field getDeclareField（String name）
+
+2.4.2取得类中所有属性--同Method
+public Filed[]  getFields()  throws  SecurityException
+
+public Filed[]  getDeclareFields()  throws  SecurityException
+
+2.4.3Field类提供的设置与取得值
+/**
+	* 
+*设置属性值
+	* 
+*obj类的实例化对象
+	* 
+*value   要设置的值
+
+
+*/
+
+public void set（Object  obj ,Object  value）
+
+/**
+	* 
+*
+	* 
+*取得属性值
+	* 
+*obj 类的实例化对象
+
+
+*/
+取得属性值
+obj 类的实例化对象
+public Object  get(object  obj）
+
+
+取得属性类型
+public  Class  <?> getType()
+
+
+2.5动态破坏封装（反射特性）--在一次JVM的进程中只能提供反射调用
+Constructor，Method，Field类都继承封装AccessibleObject类，此类中有一个破坏封装的方法
+
+public void  setAccessible（boolean flag）throws SecurityEXCeption
+
+3.ClassLoader  类加载器************
+类加载：
+
+
+javac：*.java->*.class
+javac  Test.java  >Test.class(二进制文件)
+
+
+java  主类
+java Test
+
+3.1定义
+类加载定义：通过一个类的全名称来获取此类的二进制字节流
+类加载器：实现类加载功能的代码模块
+
+3.2JDK内置的三大类加载器
+
+3.2.1BootStrap(启动类加载器)
+a.使用C++语言实现，是JVM的自身的一部分，独立于JVM外部，并且无法实现java程序的直接引用
+b.负责将存放于JAVA_HOME\bin目录下的，能被JVM识别的所有类库（例如：jar-java基础类库）加载到JVM中
+
+jar文件->压缩文件:  存放若干个编译好的class文件
+
+java不能调用C语言的加载器
+
+
+3.2.2ExtClassLoader（扩展类加载器）
+a.使用java语言实现，可以被java程序直接引用
+b.负责将存放于 JAVA_HOME\bib\ext（xml文件解析类，界面框架类）目录下的所有能被JVM识别的类库
+
+3.2.3APPClassLoader（应用程序类加载器）
+a.使用java程序实现，如果用户没有自定义类加载器，则APPClassLoader就是程序中默认的类加载器。
+b.负责加载用户ClassPath指定的类库
+
+
+3.3类加载器的双亲委派模型（定义，工作流程，存在意义）
+
+3.3.1定义：
+四种类加载器的层次模型成为类加载器的双亲委派模型
+
+
+3.3.2工作流程**************
+
+如果一个类加载器收到了类加载请求，首先不会自己尝试加载此类，而是会将类加载请求委托给父类加载器完成，每一层类加载都是如此。
+只有当父加载器无法加载此类时，子加载器才会尝试自己去加载。
+
+3.3.3存在意义
+双亲委派模型对于保证java程序的稳定运行十分重要，
+例如：
+java.lang.Object，它存放于rt.jar中。由于双亲委派模型的存在，无论哪一类加载器都要加载类，最终都是委派给处于顶端的启动类加载器进行加载。
+因此，Object类在程序的各种类加载器环境中都是同一个类
+
+比较两个类是否相等的前提条件：这两个类都是由同一个类加载器加载的。
+只要加载这两个的类加载器不同，这两个类注定不相等、
+.00
+
+4.动态代理（了解）--基于接口
+基础代理：一个接口，一个真实业务类，一个辅助类
+缺点：N个接口，N个真实业务类，N个辅助类。即使场景很相似但还是要写很多歌接口
+
+代理类不再实现某一个具体的接口，而要实现InnovationHandler接口，只有实现了InnovationHandler接口的类才具备了动态代理的功能
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
