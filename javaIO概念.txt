@@ -1,0 +1,177 @@
+﻿javaIIO_BIO（阻塞式IO ）-基于抽象类
+java。io
+
+核心掌握五个类（File，OutPutStream，InPutStream，Reader，Writer，），一个接口（Serializable）
+
+1.File文件操作类-既可以描述文件也可以描述文件夹
+
+File 类是唯一一个和文件本身操作（创建。删除，取得信息）有关的的程序类
+版本：JDK1.0
+
+产生File对象：
+public File（String  pathname）：根据文件的绝对路径产生File对象
+public File（URI   uri）：根据网络产生File对象
+
+1.1常用操作方法
+创建新文件：
+
+public  boolean createNewFile（） throws IOException（受查异常，必须强制处理）
+判断文件是否存在：
+
+public boolean exist（）
+删除文件：
+
+public boolean delete（）
+注意：这个删除在回收站里是找不到的
+
+文件分隔符：File.separator
+
+1.2目录操作
+取得父路径：
+
+
+public File getParentFile（）
+取得父路径 的目录：
+
+public String getParent（）
+创建多级父路径：一次性创建不存在
+
+public boolean  mkdirs（）
+先要判断父路径存在，才能创建新文件。然后判断文件是否存在，不存在才能创建新文件。
+创建新文件时，是调用父路径创建文件夹。否则会把要创建的文件当做一个文件夹。
+
+1.3取得文件信息
+
+判断File对象是否是文件
+
+
+public  boolean isFile（）
+
+P判断File文件是否是文件夹
+
+
+public  boolean isDirectory（）
+取得文件大小--字节为单位
+
+public long length（）
+
+取得上次 修改时间：
+
+public long lastModified（）
+
+列出一个目录的全部组成：
+
+public  File[] listFiles（）
+
+要判断当前的file确实存在并且是一个文件夹，
+
+将IO操作放在子线程跑
+
+
+public class HomeWork6 {
+    public static void main(String[] agrs){
+        File file = new File("C:"+File.separator+"Users"+File.separator+"Z"+File.separator+"Desktop");
+        new  Thread (()->{
+            long start= System.currentTimeMillis();
+            listAllFiles(file);
+            long end= System.currentTimeMillis();
+            System.out.println("时间为："+(end-start)+"毫秒");
+        }).start();
+        System.out.println("mian结束");
+    }
+    public static  void  listAllFiles(File file){
+        if(file.isFile()){
+            System.out.println(file);
+        }else{
+            if(file.exists()&&file.isDirectory()){
+                File[] files  =file.listFiles();
+                for(File file1:files  ){
+                    listAllFiles(file1);
+                }
+            }
+        }
+    }
+}
+
+2.字节流与字符流
+java.io包流分为两类：输入流，输出流
+
+字节流(byte)--原生操作，无需转换，可以处理文本文件，图像，音乐，视频等本资源
+InputStream.   OutputStream
+
+字符流（char）-经过处理后的操作，只用于处理文本
+Reader,  Writer
+
+
+流模型的操作流程：
+1.取得终端对象
+2.根据终端对象取得输入输出流
+3.根据输入输出流进行数据读取与写入
+4.关闭流
+
+IO操作属于资源处理，所有的资源处理（IO操作，数据库操作，网络操作），在使用完之后一定要关闭流。
+
+流媒体文件：视频和音频（由一个个字节流组成）
+
+
+2.1字节输出流OutputStream
+public abstract class OutputStream implements Closeable, Flushable
+
+OutputStream类实现了Closeable，Flushable两个接口，这两个接口中的方法：
+1. Closeable: public void close() throws IOException;关闭流方法
+2. Flushable: public void ﬂush() throws IOException; 刷新缓冲区方法
+
+在OutputStream类中还定义有其他方法：
+1. 将给定的字节数组内容全部输出：public void write(byte b[]) throws IOException 
+
+2. 将部分字节数组内容输出：public void write(byte b[], int oﬀ, int len) throws IOException 
+将字节数组的部分内容以off位置开始输出len长度后停止
+3. 输出单个字节：public abstract void write(int b) throws IOException;
+
+使用OutputStream输出数据时，若指定的文件不存在。FileOutputsteam会自动创建文件（不包含目录）
+使用OutputStream输出内容时，默认是文件内容的覆盖操作。
+
+若要进行文件内容的追加，使用以下构造方法：
+public FileOutputStream （File File，boolean append）
+
+
+
+1.获取终端
+2.取得指定文件的输出流
+3.进行数据输出
+4.关闭流
+
+JDK1.7追加了AutoCloseable自动关闭接口，要使用该接口必须使用try-catch快，推荐显示关闭。
+
+2.2字节输入流InputStream
+
+public abstract class InputStream implements Closeable
+
+
+发现InputStream类只实现了Closeable接口，在InputStream类中提供有如下方法：
+1. 读取数据到字节数组中,返回数据的读取个数。
+如果此时开辟的字节数组大小大于读取的数据大小，则返 回的就是读取个数；
+如果要读取的数据大于数组的内容，那么这个时候返回的就是数组长度；
+如果没有 数据了还在读，
+则返回-1: public int read(byte b[]) throws IOException.最常用方法
+
+2. 读取部分数据到字节数组中，每次只读取传递数组的部分内容，如果读取满了则返回长度(len),如果没有 读取满则返回读取的数据个数，
+如果读取到后没有数据了返回-1：public int read(byte b[], int oﬀ, int len) throws IOException
+
+3. 读取单个字节，每次读取一个字节的内容，
+直到没有数据了返回-1：public abstract int read() throws IOException;
+
+同OutputStream的使用一样，InputStream是一个抽象类，如果要对其实例化，同样也需要使用子类。如果要对 文件进行处理，则使用FileInputStream类
+
+
+public int read(byte b[]) throws IOException
+将读取的内容放到字节数组中
+返回值：
+1.返回b.length：未读取的数据>存放区的缓冲区大小，返回字节数组大小
+
+2.返回大于0的整数：此时整数小于b.length未读取的数据<存放缓冲区读大小，返回剩余数据的大小
+
+3.返回-1：此时数据已经读取完毕。
+
+
+
