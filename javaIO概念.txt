@@ -29,14 +29,17 @@ public boolean delete（）
 1.2目录操作
 取得父路径：
 
-
 public File getParentFile（）
+
 取得父路径 的目录：
 
 public String getParent（）
 创建多级父路径：一次性创建不存在
 
+
 public boolean  mkdirs（）
+
+mkdir（）创建一个文件
 先要判断父路径存在，才能创建新文件。然后判断文件是否存在，不存在才能创建新文件。
 创建新文件时，是调用父路径创建文件夹。否则会把要创建的文件当做一个文件夹。
 
@@ -44,13 +47,15 @@ public boolean  mkdirs（）
 
 判断File对象是否是文件
 
-
 public  boolean isFile（）
+
 
 P判断File文件是否是文件夹
 
-
 public  boolean isDirectory（）
+
+ if(file.exists()&&file.isDirectory())
+
 取得文件大小--字节为单位
 
 public long length（）
@@ -118,13 +123,15 @@ IO操作属于资源处理，所有的资源处理（IO操作，数据库操作�
 public abstract class OutputStream implements Closeable, Flushable
 
 OutputStream类实现了Closeable，Flushable两个接口，这两个接口中的方法：
+
 1. Closeable: public void close() throws IOException;关闭流方法
 2. Flushable: public void ﬂush() throws IOException; 刷新缓冲区方法
 
 在OutputStream类中还定义有其他方法：
-1. 将给定的字节数组内容全部输出：public void write(byte b[]) throws IOException 
 
-2. 将部分字节数组内容输出：public void write(byte b[], int oﬀ, int len) throws IOException 
+1. 将给定的字节数组内容全部输出：public void write(byte b[]) throws IOException
+
+2. 将部分字节数组内容输出：public void write(byte b[], int oﬀ, int len) throws IOException
 将字节数组的部分内容以off位置开始输出len长度后停止
 3. 输出单个字节：public abstract void write(int b) throws IOException;
 
@@ -135,8 +142,7 @@ OutputStream类实现了Closeable，Flushable两个接口，这两个接口中�
 public FileOutputStream （File File，boolean append）
 
 
-
-1.获取终端
+1.获取终端()获取file对象
 2.取得指定文件的输出流
 3.进行数据输出
 4.关闭流
@@ -171,7 +177,98 @@ public int read(byte b[]) throws IOException
 
 2.返回大于0的整数：此时整数小于b.length未读取的数据<存放缓冲区读大小，返回剩余数据的大小
 
-3.返回-1：此时数据已经读取完毕。
+3.返回-1：此时数据已经读取完毕。(终止条件)
+
+2.3字符输出流writer
+public void write（String str） throws IOEXception
+字符流可以直接支持字符串的输出
+
+字符流若为或关闭，数据在缓冲区存放，不会输出到目标终端，想要将数据输出，要么将输出流关闭，要么使用flush()强制刷新缓冲区。
+
+2.4字符输入流Reader
+public  int read （char  cbuf[]） throws  IOEXception
+
+2.5转换流（字节流->字符流   单向的，不可逆转）
+
+OutputStreamWriter：字节输出流->字符输出流
+
+InputSrreamReader：字节输入流->字符输入流
+
+字符流的具体实现大都是 通过转换流将字节流转换为字符流（意义）（FileWriter继承转换流）
+
+缓冲区会增大读取的效率
+
+4.字符编码
+1.GBK，GB2312
+GBK包含简体与繁体的中文，DB2312只包含简体中文。
+
+2.UNICODE：
+java提供的16进制编码，可以描述世界上任意语言，但是编码进制数太高，编码体积较大。
+
+3.IOS-8859-1：
+国际通用编码，不支持中文，浏览器默认编码
+
+4.UTF编码：
+结合UNICODE与IOS-8859-1，最长采用的是UTF-8编码。
+
+
+乱码是如何产生的？
+95%：编解码不一致
+5%：由于数据丢失造成的乱码。 
+
+ 5.内存流（以内存为终端的输入输出流）
+
+字节内存流
+ByteArrayInputStream,  ByteArrayOutputStream
+
+字符内存流
+CharArrayReader、CharArrayWriter
+
+j将指定的字节数组内容放到内存中
+
+public  ByteArrayInputStream（byte buf []）
+public ByteArrayOutputStream()
+
+6.打印流（输出流的强化版本）
+字节打印流：PrintStream
+字符打印流：PrintWriter
+
+打印流的设计属于装饰设计模式--基于抽象类
+
+特点：核心依然是某个类（OutputStream提供的write（））的功能，但是为了得到更好的操作效果，让其支持的功能更多一些，使用装饰类（PrintStream）
+
+优点：很容易更换装饰类来表达到不同的操作效果
+缺点：由于装饰设计的引入，造成 类结构复杂
+
+7.System 对IO的支持
+
+标准输入（显示屏）：System.out
+标准输出（键盘）：System.in
+标准错误：System.err
+
+
+7.1系统输出
+系统提供的out（输出到显示器，颜色为黑色），err（输出到显示，器颜色为红色）二人对象均是PrintStream的对象
+
+以后输出采用日志：log --  格式化输出
+
+7.2系统输入
+系统提供的System.in是InputStream的直接对象
+
+IO为阻塞式
+
+
+8.两种输入流
+8.1BufferedReader，BufferInputrtStream
+
+readLine()直接读取一行输入，默认以回车换行
+
+8.2java.util.Scanner 
+支持正则表达式
+
+hasNextXX()：获取指定数据类型
+nextXX（）：获取指定数据类型数据
+useDelimiter（“指定分隔符”）
 
 
 
