@@ -34,4 +34,149 @@ eg：byte b1=120;//okbyte  b3=130;  //error，超出byte范围，必须强转int num1= 120;
 需要在浮点数后加F 或者f 类型float    f1=10.2f;float   f2=(float)10.2;3..17字符型3.1.7所有数据类型的默认值必须结合类来观察，主方法中不存在默认值，主方法中变量必须赋值后使用。
 3.2   引用数据类型数组，类，接口（默认值null）
 
+3.1 . 基本数据类型（8大类）
 
+3.1.1.整形(默认值0)：
+	* byte     1字节[-128~127] ,       [-2^7,2^7-1]
+	* short    2字节[-2^15,2^15-1], 
+	* int        4字节[-2^31~2^32-1],
+	* long     8字节[-2^63，2^63-1]
+
+
+
+3.1.11浮点型：默认值(0.0）：double,float
+
+3.1.2 字符型   char       （默认值\u0000）
+
+3.1.3 布尔型   boolean   (默认值false)
+
+3.1.5  数据类型的使用
+	* 描述整数 用int  ，小数 用double
+	* long一般用于描述日期，时间，内存，或文件大小
+	* 编码转换或者二进制流的操作使用byte
+	* char一般用于描述中文(一般不用)
+
+
+
+3.2整形
+3.2.1  在java程序中，任何一个整形常量都是int类型
+
+int num=10;
+System.out.println(num*2);        //输出20
+
+
+3.2.2  在java 中声明一个long类型的常量，在数字后加上 l 或 L
+
+          eg:   System.out.println(11+1l)           //结果为12
+
+3.2.3  在java中数据类型转换
+	* 大数据类型与小数据类型做数值运算时，小数据类型自动转化为大数据类型，无需强转
+	* 大的数据类型转化为小数据类型，必须强转。可能会丢失内容/精度。
+
+因为在进行数据操作的过程中会存在数据溢出的问题，也就是已经达到最大整数或最整数时继续进行数学运算会导致最大最小值转换的问题。（注意：出现的执行顺序从右向左）
+例子：数据溢出问题
+int maxValue = Integer.MAX_VALUE;
+int minValue = Integer.MIN_VALUE;
+ System.out.println(maxValue+1);    //  -2147483648
+System.out.println(minValue-1);      //   2147483647
+System.out.println(maxValue);         //   2147483647
+System.out.println(minValue);          //  -2147483648
+
+
+解决方法：更换数据类型
+1.用long形的接受数据，且后边数据类型必须变为long类型，否则用long类型接收也为数据溢出
+     long num = maxValue + 1L；          //  2147483648
+     long num = （long）maxValue+1；//   2147483648
+     long num = maxValue + 1;       // -2147483648     
+2.把要计算的数据变为long类型
+    long num = 2147483648L("l"或者"L")都可以
+
+
+例外：byte与Int 类型转换
+	* 整形常量赋值给byte变量时，若常量在byte范围内[-128,127]，可以直接赋值无需强转。整形变量无论是否在byte范围内必须强转
+
+
+
+eg：
+byte b1=120;//ok
+byte  b3=130;  //error，超出byte范围，必须强转
+
+int num1= 120;
+byte  b2=num1;   //error 必须强转
+
+举例1：问下边代码输出什么
+byte data = （byte）300；
+结果为：44，
+原因：byte取得是二进制低八位的，所以为结果44。  这一类型的题，都是先把数字化成二进制然后取低八位。
+
+
+3.2.4数默认为double类型。要为float类型，需要在浮点数后加F 或者f 类型
+注意：float的保存范围小于double，要使用float必须强制转换
+
+float    f1=10.2f/F;
+float   f2=(float)10.2;
+
+ 如果要想准确计算，必须将其中一个变量变为double类型
+举例：int num1=10；
+      int num2=4;
+       System.out.println(num1/num2);             //输出2    int/int 结果还是int
+       System.out.println(num1/(double)num2);     //输出2.5   
+
+
+
+3.3字符型
+3.3.1字符型用char 来表示，并且使‘’来表示字符变量的内容，并且可以和int相互互换
+	* 大写字母（A~Z）：65~90
+	* 小子字母（a~z）：97~122
+	* int型转为char型需要强制类型转换
+
+
+
+char c='A';
+int num=c;
+System.out.println(c);    //输出：A
+
+举例：实现字母转变为小写字母
+char c='A';
+int num=c+'32';             //A=65,  A+32转换为a
+char x= (char)num;         //int到char需要强制类型转换
+System.out.printkn(x);     //输出a
+
+
+注意：
+	* 字符型数字（‘0’~‘9’）与int数字（0~9）不同，If（‘0’==0）返回false
+	* java中使用Unicode编码，（其他语言采用ASCII编码），使用16进制编码，可以保存任何信息，包括中文，所以java对字符的支持特性特别好。
+
+
+
+3.4布尔型
+‘0’表示false，‘1’表示true
+char 可以描述的只是单个字符，如果想要描述多个字符串就要使用String，但String不是基本数据类型，它是一个引用数据类型。
+
+举例二：
+int num1=10；
+int num2=2;
+System.out.printkn("结果为"+(num1+num2));//输出结果为12
+
+3.5所有数据类型的默认值必须结合类来观察，主方法中不存在默认值，主方法中变量必须赋值后使用。
+
+3.6常见的转义字符
+换行：\n  
+制表符：\t
+双引号：\"
+单引号：\'
+
+
+3.7 引用数据类型
+a.数组（默认值null）
+b.String：字符串型，用于存储一串字符
+c.接口（默认值null）
+d.类（默认值null）
+
+String可以使用‘+’，表示八连个字符创相连接。而且，只要使用了“+”，则所有的数据类型包括引用类型都会变为String类，如果想要得到后边的计算结果，就要先把要计算的式子用“（）”括起来
+举例1：
+String name = "zhangsan ";
+int age=18;
+System.out.println("姓名为"name+"年龄为"+age);//输出 姓名为 zhangsan 年龄为 18
+
+总结：使用“”声明的为字符串，字符串使用String来定义
