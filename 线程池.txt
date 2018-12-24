@@ -17,7 +17,6 @@ Schedule（Runnable| Callable  command，
 scheduleAtFixedRate（Runnable  command ，long  initiaDelay  ，long  Period，TimeUnit unit）
 延迟delay个时间单位后开始执行，并且每隔period时间单位就执行一次
 
-
 ThraedPoolExectuor(普通调度池核心类)
 scheduleThreadPoolExecutor（定时调度池核心类）
 
