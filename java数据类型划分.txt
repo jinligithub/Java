@@ -180,3 +180,71 @@ int age=18;
 System.out.println("姓名为"name+"年龄为"+age);//输出 姓名为 zhangsan 年龄为 18
 
 总结：使用“”声明的为字符串，字符串使用String来定义
+
+
+4.Java运算符
+4.1基础运算符：++/--
+所有的运算符都是有优先级的，
+
+自增自减（++x,x--）
+int x1=3;
+int x2=3;
+int y=4;
+int result1= x1++*y;//先执行x*y=12,在执行x++
+int result2= ++x2*y;//先执行x++,在执行x*y=12
+System.out.println(x1);//4,先执行，在加加
+System.out.println(x2);//4，先加加，在执行
+System.out.println(result1);//12
+System.out.println(result2);//16
+
+总结：++X：先++再计算
+     X++：先计算再++
+
+4.2三目运算符--是一种赋值运算，根据条件判断赋值
+语法：数据类型 变量=布尔表达式？满足条件：不满足条件
+
+三目运算符
+int x=3;
+int y=4;
+int z=x>y?x+y:x-y;//x>y为假，执行3-4=-1
+System.out.println(z);//-1
+4.3逻辑运算符*****
+逻辑运算符：
+与：&（按位与），&&（逻辑与）
+或：|（按位或），||（逻辑或）
+非：！
+异或：^
+去反：~
+
+逻辑运算符
+“|”：多个表达式都要判断，“||”：只要有表达式返回true，剩下的条件就不要在判断了
+if(1<2|10/0==0){
+System.out.println("满足条件");
+}else{
+System.out.println("不满足条件");
+}
+输出： Exception in thread "main" java.lang.ArithmeticException: / by zero at Dep.main(Dep.java:81)
+
+if(1<2||10/0==0){
+System.out.println("满足条件");
+}else{
+System.out.println("不满足条件");
+}
+输出：满足条件
+///////////////////////////////////////////////////////////////////
+位运算
+System.out.println(2&8);//0 &一假则假
+System.out.println(2|8);//10 |一真则真
+//>>除（右移） <<乘（左移）
+System.out.println(2>>1);//1 2/1右移是除法
+System.out.println(2<<1);//4 2*2^1左移是乘法
+System.out.println(2>>4);//0 2/4
+System.out.println(2<<4);//32 2*2^4
+
+总解：
+1.&&和&
+&&：逻辑与（短路与），只要有条件返回false，剩下的条件就不要判断了，返回false。
+&：按位与（常路与），每个条件都要判断，即使很多个条件返回false，剩下的条件也要判断。
+2.||和|
+||：逻辑或（短路或），只要有一个条件返回true，剩下的条件就不要判断了。返回true。
+|：安位或（长路或），每个条件都要判断。即使多个条件返回true，剩下的条件也要判断。
