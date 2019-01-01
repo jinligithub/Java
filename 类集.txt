@@ -274,7 +274,75 @@ Hashtable
 3.使用方法上加锁，效率低，线程安全
 4.底层哈希表
 
+1**************.Map集合使用迭代器（Iterator)输出*********
+Set<Map,Entry<K，V>>entrySet()：将Map集合转为Set集合
 
+
+
+2.栈与队列
+
+栈：先进后出
+函数栈帧：浏览器的标签页的后退，安卓Activity的后退，编辑器的撤销
+
+
+队列：先进先出
+消息队列：kakfa
+
+
+Queue接口：LinkedList
+Queue<Integer> queue= new LinkedLis
+
+入队列：add()
+出队列：poll()
+返回对头元素，不出队：peek（）
+
+3.资源文件操作（properties属性文件）
+资源文件内容都是K-V格式，并且无论是Key，value都是String类型
+
+设置属性：
+setProperty(String key,String value)
+取得属性：
+getProperty(String  key )  : String
+若没有指定Key，返回Null
+getProperty(String  key,  String defaultValue):
+若没有指定key值，返回默认值
+
+
+将资源文件输入输出到目标终端：
+输出到目标终端store（OutputStream  out, String  Comment）;
+从目标终端中读取数据load(InputSream  in);
+
+4.Collections工具类
+Array-Arrays
+Executor-Exceutors
+Collection-Collections
+
+集合反转，排序
+
+1.将线程不安全集合包装为线程安全集合（不推荐）
+在add,remove等修改方法中使用同步代码块保证线程安全，效率较低。要使用线程安全集合，推荐使用juc包下的并发集合类（ConcurrentHashMap，CopyOnWriteArrayList）
+2.集合排序
+collections.sort(集合名称)
+3.集合反转
+collections.reverse(集合名称)
+
+
+5.Stream数据流（JDK1.8新增）：Collection接口
+
+核心方法：取得Stream流
+Stream<E>  Stream()
+
+"：："：方法引用
+
+常用方法：
+forEach：集合输出
+filter方法：数据过滤
+max/min：取得最大最小值
+
+Map/Reduce模型
+map()：数据的前期处理操作
+
+reduce()：数据的后期收集
 
 
 
