@@ -1,44 +1,114 @@
-一.深浅拷贝（对象）
-Cloneable：CloneNotSupportedException
-只有实现了Clone able接口才可以使用Object类提供的Clone方法。
-protected　native　　Object　clone（）throws　CloneNotSupporedException
-要想让对这些具有拷贝的功能，必须实现Cloneable接口（标识接口，标识此类允许被clone），并且在类中自定义clone调用Object类提供的继承权限clone方法。
-标识接口
+一、深浅拷贝(对象)
+Cloneable:CloneNotSupportedException
 
+只有子类实现了Cloneable接口后才可以使用Object类提供的clone方法。
+protected native Object clone() throws CloneNotSupportedException;
 
-浅拷贝：对象值拷贝。对于浅拷贝而言，拷贝出来的对象任然保留原来对象的所有引用。
+要想让对象具有拷贝的功能,必须实现Cloneable接口(标识接口，表示此类允许被clone),并且在类中自定义clone调用Object类提供的继承权限clone方法
 
-问题：牵一发而动全身。
-只要任意一个拷贝对象（或原对象）中的引用发送变化，所有对象均会受到影响。
+浅拷贝:对象值拷贝
+对于浅拷贝而言，拷贝出来的对象仍然保留原对象的所有引用。
 
-深拷贝：对象中深拷贝，拷贝出来的对象产生了所有引用的新的对象。
+问题:牵一发而动全身
+只要任意一个拷贝对象(或原对象)中的引用发生改变，所有对象均会受到影响。
 
-如何实现深拷贝：
-１.包含的其他类继续实现Clone able接口，并且调用clone方法（递归实现clone）
-２.使用序列化（＊＊＊＊＊＊＊＊＊）
-实现序列化进行深浅拷贝时，无需再实现Clone able接口，只要实现Serializable接口即可
+深拷贝:
+深拷贝，拷贝出来的对象产生了所有引用的新的对象。
 
-特点：修改任意一个对象，不会对其他对象产生影响。
+如何实现深拷贝:
+1.包含的其他类继续实现Cloneable接口，并且调用clone方法(递归实现Clone)
+2.使用序列化(*****)
+使用序列化进行深拷贝时，无须再实现Cloneable接口，只需要实现Serializable即可。
 
+class Teacher implements Serializable{
+    private String name;
+    private String job;
 
-延迟拷贝：浅拷贝＋深拷贝　　　
+    public Teacher(String name, String job) {
+        this.name = name;
+        this.job = job;
+    }
 
+    public String getName() {
+        return name;
+    }
 
-IO
-输入：Scanner
-hashNextXXX（）：Scanner默认碰到空格　　换行　　Tab都是分隔符
-nextXXX（）：
-自定义分隔符：
+    public void setName(String name) {
+        this.name = name;
+    }
 
+    public String getJob() {
+        return job;
+    }
 
+    public void setJob(String job) {
+        this.job = job;
+    }
+}
 
+class Student implements Serializable{
 
+    private String name;
+    private int age;
+    private Teacher teacher;
 
+    public Student(String name, int age, Teacher teacher) {
+        this.name = name;
+        this.age = age;
+        this.teacher = teacher;
+    }
 
+    public Student cloneObject() throws Exception{
+        ByteOutputStream bos = new ByteOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
+        oos.writeObject(this);
+        ByteArrayInputStream bis = new ByteArrayInputStream(bos.getBytes());
+        ObjectInputStream ois = new ObjectInputStream(bis);
+        return (Student) ois.readObject();
+    }
 
+    public String getName() {
+        return name;
+    }
 
+    public void setName(String name) {
+        this.name = name;
+    }
 
+    public int getAge() {
+        return age;
+    }
 
+    public void setAge(int age) {
+        this.age = age;
+    }
 
+    public Teacher getTeacher() {
+        return teacher;
+    }
 
+    public void setTeacher(Teacher teacher) {
+        this.teacher = teacher;
+    }
 
+}
+public class Test {
+    public static void main(String[] args) throws Exception{
+        Teacher teacher = new Teacher("刘益铭","Java Teacher");
+        Student student = new Student("侯老板",18,teacher);
+        Student studentClone = student.cloneObject();
+        System.out.println(student);
+        System.out.println(studentClone);
+        System.out.println("=================");
+        System.out.println(studentClone.getName());
+        System.out.println(studentClone.getAge());
+        System.out.println(studentClone.getTeacher().getName());
+        System.out.println(studentClone.getTeacher().getJob());
+        System.out.println("------------------------------");
+        System.out.println(teacher == studentClone.getTeacher());
+    }
+}
+
+特点:修改任意一个对象，不会对其他对象产生影响
+
+延迟拷贝:浅拷贝+深拷贝
