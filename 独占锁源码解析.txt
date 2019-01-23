@@ -1,0 +1,88 @@
+独占式锁特性学习:
+1.1 可中断获取锁
+void lockInterruptibly() throws InterruptedException;
+
+最终会调用AQS acquireInterruptibly(int arg)模板方法
+
+public final void acquireInterruptibly(int arg)
+            throws InterruptedException {
+        // 增加了对中断状态的判断，
+        //如果检测线程中断状态改变，抛出中断异常后方法直接退出
+        if (Thread.interrupted())
+            throw new InterruptedException();
+        if (!tryAcquire(arg))
+            doAcquireInterruptibly(arg);
+    }
+doAcquireInterruptibly(arg)
+    private void doAcquireInterruptibly(int arg)
+        throws InterruptedException {
+        final Node node = addWaiter(Node.EXCLUSIVE);
+        boolean failed = true;
+        try {
+            for (;;) {
+                final Node p = node.predecessor();
+                if (p == head && tryAcquire(arg)) {
+                    setHead(node);
+                    p.next = null; // help GC
+                    failed = false;
+                    return;
+                }
+                if (shouldParkAfterFailedAcquire(p, node) &&
+                    parkAndCheckInterrupt())
+                    // 线程被阻塞时若检测到中断抛出中断异常后退出。
+                    throw new InterruptedException();
+            }
+        } finally {
+            if (failed)
+                cancelAcquire(node);
+        }
+    }    
+
+1.2 超时等待获取锁(在中断获取锁的基础上增加超时功能)
+boolean tryLock(long time, TimeUnit unit) 
+throws InterruptedException;    
+该方法本质调用AQS的模板方法tryAcquireNanos(int arg, long nanosTimeout)
+
+public final boolean tryAcquireNanos(int arg, long nanosTimeout)
+    throws InterruptedException {
+    if (Thread.interrupted())
+    throw new InterruptedException();
+    return tryAcquire(arg) ||
+    doAcquireNanos(arg, nanosTimeout);
+}
+private boolean doAcquireNanos(int arg, long nanosTimeout)
+            throws InterruptedException {
+        // 传入时间小于0 方法直接退出，线程获取锁失败
+        if (nanosTimeout <= 0L)
+            return false;
+        // 根据超时时间计算出截止时间
+        final long deadline = System.nanoTime() + nanosTimeout;
+        final Node node = addWaiter(Node.EXCLUSIVE);
+        boolean failed = true;
+        try {
+            for (;;) {
+                final Node p = node.predecessor();
+                if (p == head && tryAcquire(arg)) {
+                    setHead(node);
+                    p.next = null; // help GC
+                    failed = false;
+                    return true;
+                }
+                // 再次计算截止时间-当前时间值
+                nanosTimeout = deadline - System.nanoTime();
+                // 已超时，线程直接退出
+                if (nanosTimeout <= 0L)
+                    return false;
+                //
+                if (shouldParkAfterFailedAcquire(p, node) &&
+                    nanosTimeout > spinForTimeoutThreshold)
+                    // 在超时时间内仍未被唤醒，线程退出
+                    LockSupport.parkNanos(this, nanosTimeout);
+                if (Thread.interrupted())
+                    throw new InterruptedException();
+            }
+        } finally {
+            if (failed)
+                cancelAcquire(node);
+        }
+    }
