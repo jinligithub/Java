@@ -1,4 +1,4 @@
-java类集（数据结构--多线程）--动态数组（解决数组固定，当元素个数达到最大值时，动态增加容量）
+Ljava类集（数据结构--多线程）--动态数组（解决数组固定，当元素个数达到最大值时，动态增加容量）
 
 java.util
 
@@ -143,23 +143,42 @@ int compare（T  o1,  T    o2）;
 Compartor接口与Compartor接口的关系：
 
 
-Comparable是排序接口，若一个 类实现了Comparable接口，意味着该类支持排序，是一个内部就比较器（自己和别人比）
+Comparable是排序接口，若一个 类实现
+0了Comparable接口，意味着该类支持排序，是一个内部就比较器（自己和别人比）
 
 Compartor接口时比较器接口，本身不支持排序，专门有若干个第三方的比较器（实现了Compartor接口的类）来进行类的排序，是一个外部比较器（策略模式）
 
 
 重复元素的比较：
-TreeSet和TreeMap依靠Compartor或Comparable接口来区分重复元素。
+TreeSet和TreeMap依靠Comparator或Comparable接口来区分重复元素。
 
 自定义类要想保存在TreeSet和TreeMap中：
 1.要么该类直接实现Comparable接口，覆写compareTo方法
 2.要么实现一个比较器传入TreeSet或TreeMap来进行外部比较。
 
-而HashSet与HashMAp并不依赖比较接口。此时要想区分自定义元素是否重复，需要提示覆写equals与HashCode方法
+返回0认为元素是重复的
+
+而HashSet与HashMap并不依赖比较接口comparable或comparator。此时要想区分自定义元素是否重复，需要同时覆写equals与HashCode方法
+
+
+为什么hashset要同时覆写这两个方法？
+
+因为在list里只覆写equals方法就可以区分元素是否重复，
+因为底层数据结构不一样，list底层是单个元素，她是线性的结构，都在一行保存着，就是一个链表，所有元素都在这这个链表上放着。
+而Hashset或者HashMap,底层是哈希表+红黑树。如果有两个元素的值相同，所以他们的哈希码也相同，哈希码确定这个元素应该放在哪个桶下边，但是存放时会检查元素是否与重复
+先调用HashCode计算出哈希码，计算出对象存放的数据桶，然后调用equals比较桶里元素是否相等，若相等，则不在存放元素。如果equals返回false，则在相同的桶之后使用链表将元素连接起来。
+
+
+
+
+Hash Code：求哈希码
+
+equals相等的两个对象，HashCode一定保证相等
 
 首先覆写equals方法来判断两个元素的内容是否相等。
 
 覆写equals方法的原则：
+
 自返性：对于任何非空引用值,x，x.equals（x）都返回true
 对称性：对于任何非空X,Y，当且仅当x.equals(y)返回true，y.equals(x)也返回true
 传递性：对于任何非空x,y,z,如果x.equals(y)返回true，y.equals(z)返回true，一定有x.equlas(z)返回true。
@@ -167,19 +186,35 @@ TreeSet和TreeMap依靠Compartor或Comparable接口来区分重复元素。
 非空性：对于任何非空引用x.equals(null)，一定返回false。
 equals比较的是地址
 
-HashMAp 如何存放数据：
-先调用HashCode 计算出对象HAsh码决定存放的数据桶，然后使用equals来比较元素是否相等。若相等，则不再放置数据元素。若equals返回false，则在相同的桶之后，使用链表将若干元素链接起来。
+HashMap 和HashSet如何存放数据：(哈希表的存放原理)
 
-Object类提供的hashCode方法默认对象使用对象的地址进行hash
+先调用HashCode 计算出对象Hash码决定存放的数据桶，然后使用equals来比较元素是否相等。若相等，则不再放置数据元素。若equals返回false，则在相同的桶之后，使用链表将若干元素链接起来。
 
-若两个对象equals方法返回true，他们的hashCider必然要保持相等。但是两个对象的hashCode相等，equals不一定相等。
 
-当且仅当equals与hashCode方法均返回true，才默认两个对象真正的相等。
+Object类提供的hashcode的方法默认使用对象的地址进行hash。
 
+如何证明两个对象真正的相等
+若两个对象equals方法返回true，他们的hashCode必然要保持相等。但是两个对象的hashCode相等，equals不一定相等。当且仅当equals与hashCode方法均返回true，才默认两个对象真正的相等。
+
+
+为什么两个对象的equals相等HashCode却不一定相等
+
+hash是一个函数，算出来是一个值。
+
+下边两个虽然值一样，但是他们不是同一个对象。所以HashCode相等。equals不一定相等。
+但是equals比较的是值，所以HashCode也一定相等
+name  age
+28        2
+2         28
+“张三”   20
+“张三”   20
 
 
 hash表的意义，为何要分桶来存放元素？
+
 优化了查找次数
+
+
 
 
 四，集合输出（迭代器输出）--Iterator接口
@@ -192,7 +227,7 @@ E  next（）；  取得下一个元素
 4.1迭代输出Iterator--顺序的，只能从前向后输出（Collection接口提供）
 调用Collection集合子类的Iterator方法取得内置的迭代器，使用以下输出格式
 while （iterator.hashNext（））{
-      Sysytem.out.println(iterator.next());
+      System.out.println(iterator.next());
 }
 
 4.2双向迭代输出ListIterator
@@ -208,7 +243,7 @@ hasMoreElements（）：判断是否有下一个元素
 nextElements（）：取得下一个元素
 
 4.4for-each输出（所有子类都满足）
-能使用foreach输出的本质在各个集合
+能使用foreach输出的本质在各个集合都内置了迭代器
 
 
 
@@ -216,13 +251,20 @@ fail-fast机制：
 ConCurrentModificationException发生在Collection集合使用迭代器遍历时，是用来集合类提供的修改集合内容报错，而如果使用Iterator迭代器的remove（）不会出现此错误。
 
 原因是：
-final  void  checkForComoification(){
+final  void  checkForComodification(){
          if（modCount !=expectedModCount）
-
+              throw new ConcurrentModificationException();
 }
 
-Collection集合中的modCount表示当前集合修改的次数
-expectModCount是迭代器中记录当前集合的修改次数。取得当前集合迭代器时（及调用list.Iterator（）），expectedModCount=modCount换言之迭代器就是当前集合的一个副本。
+Collection集合中的modCount表示当前集合修改的次数(意义：如果在一个并发的情况下，如果集合已经添加完元素，用户一应正在遍历了，如果这个时候修改内容，就要有一个东西告诉用户这个值已经修改了，它保证了用户不会脏读数据（下载看到的数据不是最新的），modCount保证了用户看到的值一定是最新的值)
+
+expectModCount是迭代器中记录当前集合的修改次数。取得当前集合迭代器时（及调用list.Iterator（）方法时），expectedModCount=modCount，换言之，迭代器就是当前集合的一个副本。
+
+
+在取得iterator迭代器的时候，就给expectedModCount赋值了，此时执行expectedModCount=modCount
+
+
+
 
 快速失败策略保证了所有用户在进行迭代遍历集合时，拿到的数据一定是最新的数据（避免“脏读”产生）
 
@@ -274,6 +316,8 @@ Hashtable
 3.使用方法上加锁，效率低，线程安全
 4.底层哈希表
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 1**************.Map集合使用迭代器（Iterator)输出*********
 Set<Map,Entry<K，V>>entrySet()：将Map集合转为Set集合
 
@@ -343,6 +387,15 @@ Map/Reduce模型
 map()：数据的前期处理操作
 
 reduce()：数据的后期收集
+
+
+
+
+
+
+
+
+
 
 
 
