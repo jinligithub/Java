@@ -8,7 +8,6 @@ ClassÀàÃèÊö½Ó¿ÚÓëÀàµÄ×é³É£¬Class¶ÔÏóÓÉJVMµÚÒ»´Î¼ÓÔØÀàÊ±²úÉú£¬²¢ÇÒÈ«¾ÖÎ¨Ò»¡£È¡µÃÈ
 »ù±¾ÀàÐÍÓÐClassÀà£¬µ«²»ÊÇClass¶ÔÏó¡£public T newInstance£¨£©£ºÍ¨¹ý·´ÉäÊµÀý»¯Àà¶ÔÏó¡£Í¨¹ý·´Éä¿ÉÒÔÆÆ»µ·â×°¡£ÏÈÈ¡µÄClass¶ÔÏó£¬Í¨¹ý·´Éä²úÉúÀàµÄ¶ÔÏó£¬
 
 
-
 12.1
 
 1.·´ÉäÓë¹¤³§·½·¨Ä£Ê½
