@@ -21,6 +21,21 @@ Map：
 1.对比HashMap，Hashtable关系
 2.是否了解concurrentHashMAp 以及实现原理。
 
+Set接口：不允许数据重复（Set接口就是value值相同的Map集合，先有Map才有Set）
+Set接口：没有扩充的方法
+
+Set接口常用子类：
+HashSet（无序存储）
+1.底层使用哈希表+红黑树
+2.允许存放null，无序存放
+
+
+TreeSet（有序存储）-TreeMap
+1.底层使用红黑树
+2.不允许空值出现
+3.自定义类想要保存到TreeSet中，要么实现Comparable接口，要么向TreeSet传入比较器（Comparator接口）
+
+
 
 1.java类集产生--JDK1.2
 
@@ -96,7 +111,7 @@ Set接口没有扩充方法
 Set接口的常用子类
 
 HashSet（无语存储）---HashMap
-底层使用哈希表+红黑树
+1.底层使用哈希表+红黑树
 2.允许存放null，无序存储
 
 TreeSet（有序存储）：--TreeMap
@@ -114,7 +129,7 @@ java.lang.Comparable接口（内部比较器）
 
 实现了Comparable接口的类可以直接存放在TreeSet或TreeMap中
 
-public intcompareTo （T  o  ）
+public int  compareTo （T  o  ）
 
 返回值的三种情况：
 返回正数：表示当前对象大于目标对象
@@ -173,7 +188,7 @@ TreeSet和TreeMap依靠Comparator或Comparable接口来区分重复元素。
 
 Hash Code：求哈希码
 
-equals相等的两个对象，HashCode一定保证相等
+equals相等的两个对象，HashCode一定保证相等。HashCode相同的两个对象，equals不一定相等。
 
 首先覆写equals方法来判断两个元素的内容是否相等。
 
@@ -194,6 +209,7 @@ HashMap 和HashSet如何存放数据：(哈希表的存放原理)
 Object类提供的hashcode的方法默认使用对象的地址进行hash。
 
 如何证明两个对象真正的相等
+
 若两个对象equals方法返回true，他们的hashCode必然要保持相等。但是两个对象的hashCode相等，equals不一定相等。当且仅当equals与hashCode方法均返回true，才默认两个对象真正的相等。
 
 
@@ -218,13 +234,16 @@ hash表的意义，为何要分桶来存放元素？
 
 
 四，集合输出（迭代器输出）--Iterator接口
-迭代器：为了便立即和而生。--迭代器模式
+迭代器：为了遍历集合而生。--迭代器模式
+
+
+
+4.1迭代输出Iterator--顺序的，只能从前向后输出（Collection接口提供）
 
 Iterator接口两个核心方法：
 boolean  hashNext（）；  判断是否还有元素
 E  next（）；  取得下一个元素
 
-4.1迭代输出Iterator--顺序的，只能从前向后输出（Collection接口提供）
 调用Collection集合子类的Iterator方法取得内置的迭代器，使用以下输出格式
 while （iterator.hashNext（））{
       System.out.println(iterator.next());
@@ -248,7 +267,7 @@ nextElements（）：取得下一个元素
 
 
 fail-fast机制：
-ConCurrentModificationException发生在Collection集合使用迭代器遍历时，是用来集合类提供的修改集合内容报错，而如果使用Iterator迭代器的remove（）不会出现此错误。
+ConCurrentModificationException发生在Collection集合使用迭代器遍历时，是因为在集合遍历时00修改集合内容报错，而如果使用Iterator迭代器的remove（）不会出现此错误。
 
 原因是：
 final  void  checkForComodification(){
@@ -258,7 +277,7 @@ final  void  checkForComodification(){
 
 Collection集合中的modCount表示当前集合修改的次数(意义：如果在一个并发的情况下，如果集合已经添加完元素，用户一应正在遍历了，如果这个时候修改内容，就要有一个东西告诉用户这个值已经修改了，它保证了用户不会脏读数据（下载看到的数据不是最新的），modCount保证了用户看到的值一定是最新的值)
 
-expectModCount是迭代器中记录当前集合的修改次数。取得当前集合迭代器时（及调用list.Iterator（）方法时），expectedModCount=modCount，换言之，迭代器就是当前集合的一个副本。
+expected*ModCount是迭代器中记录当前集合的修改次数。取得当前集合迭代器时（及调用list.Iterator（）方法时），expectedModCount=modCount，换言之，迭代器就是当前集合的一个副本。
 
 
 在取得iterator迭代器的时候，就给expectedModCount赋值了，此时执行expectedModCount=modCount
@@ -282,7 +301,8 @@ fail-safe：不产生ConcurrentModificationException异常，juc包下的线程安全集合（cop
 
 5.Map集合
 
-Map集合是java保存二元偶对象（键值对）的最顶层接口。
+
+Map接口是java保存二元偶对象（键值对）的最顶层接口。
 
 public  interface  Map<k，v>
 key值唯一，通过一个Key值可以找到唯一一个value值。
@@ -304,21 +324,28 @@ HashMap（使用频率最高--必考），TreeMap，Hashtable,ConcurrentHashMap
 
 Map接口的使用
 
+
+HashMap和Hashtable的比较
+
+
 HashMap--类比HashSet
 1.允许key和value为null，且key值只有一个为null，value可以有多个为null。
 2.JDK1.2产生
 3.异步处理，效率高，线程不安全
 4.底层哈希表+红黑树（JDK8）
 
-Hashtable 
+Hashtable
 1.key和value均不允许为null
 2.JDK1.0产生
 3.使用方法上加锁，效率低，线程安全
 4.底层哈希表
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 1**************.Map集合使用迭代器（Iterator)输出*********
+
 Set<Map,Entry<K，V>>entrySet()：将Map集合转为Set集合
 
 
